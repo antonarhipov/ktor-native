@@ -9,7 +9,8 @@ buildscript {
 
 plugins {
     application
-    kotlin("multiplatform") version "1.9.10"
+    kotlin("multiplatform") version "2.0.0"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
     id("com.google.cloud.tools.jib") version ("3.4.0")
 }
 
@@ -19,17 +20,6 @@ repositories {
 }
 
 kotlin {
-    //region original
-    val hostOs = System.getProperty("os.name")
-    val arch = System.getProperty("os.arch")
-    val nativeTarget = when {
-        hostOs == "Mac OS X" && arch == "x86_64" -> macosX64("native")
-        hostOs == "Mac OS X" && arch == "aarch64" -> macosArm64("native")
-        hostOs == "Linux" -> linuxX64("native")
-        // Other supported targets are listed here: https://ktor.io/docs/native-server.html#targets
-        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-    }
-    //endregion
 
     linuxX64 {
         binaries {
@@ -49,16 +39,6 @@ kotlin {
         }
     }
 
-    //region macOS Arm64
-    macosArm64 {
-        binaries {
-            executable {
-                entryPoint = "main"
-            }
-        }
-    }
-    //endregion
-
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -66,8 +46,6 @@ kotlin {
                 implementation("io.ktor:ktor-server-cio:$ktor_version")
                 implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
-                implementation("io.arrow-kt:suspendapp:0.4.0")
-                implementation("io.arrow-kt:suspendapp-ktor:0.4.0")
             }
         }
         val commonTest by getting {
@@ -82,8 +60,8 @@ kotlin {
 tasks.register<Copy>("copyBinary") {
     dependsOn(tasks.first { it.name.contains("linkReleaseExecutable") })
     from(layout.buildDirectory.file("bin/linuxX64/releaseExecutable/ktor-native.kexe"))
-//    into(layout.buildDirectory.dir("native/nativeCompile"))
-    into(layout.buildDirectory.dir("app"))
+    into(layout.buildDirectory.dir("native/nativeCompile"))
+//    into(layout.buildDirectory.dir("app"))
 }
 
 tasks.withType<com.google.cloud.tools.jib.gradle.JibTask> {
@@ -93,7 +71,6 @@ tasks.withType<com.google.cloud.tools.jib.gradle.JibTask> {
 jib {
     from {
         image = "gcr.io/distroless/base"
-//        image = "alpine"
     }
     pluginExtensions {
         pluginExtension {
@@ -105,5 +82,3 @@ jib {
         mainClass = "ApplicationKt"
     }
 }
-
-//sourceSets.create("main")
