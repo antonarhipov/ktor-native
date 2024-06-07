@@ -23,7 +23,7 @@ kotlin {
 
     linuxX64 {
         binaries {
-            executable(listOf(DEBUG, RELEASE)) {
+            executable(listOf(/*DEBUG, */RELEASE)) {
                 entryPoint = "main"
                 linkerOpts("--as-needed")
                 freeCompilerArgs += "-Xoverride-konan-properties=linkerGccFlags.linux_x64=-lgcc -lgcc_eh -lc"

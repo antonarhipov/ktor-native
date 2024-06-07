@@ -1,0 +1,45 @@
+###
+GET localhost:8080
+
+###
+POST localhost:8080/one
+Content-Type: application/json
+
+{
+  "id": 123,
+  "title": "Some Title",
+  "description": "This is a description"
+}
+
+###
+POST localhost:8080/many
+Content-Type: application/json
+
+[
+  {
+    "id": 1,
+    "title": "AAA",
+    "description": "aaaaaaaaaa"
+  },
+  {
+    "id": 2,
+    "title": "BBB",
+    "description": "bbbbbbbbbb"
+  },
+  {
+    "id": 3,
+    "title": "CCC",
+    "description": "cccccccccc"
+  },
+  {
+    "id": 4,
+    "title": "DDD",
+    "description": "dddddddddd"
+  },
+  {
+    "id": 5,
+    "title": "EEE",
+    "description": "eeeeeeeeee"
+  }
+]
+
