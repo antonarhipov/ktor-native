@@ -26,13 +26,15 @@ fun Application.module() {
     routing {
         val r = Random(1000)
         get("/") {
-            call.respondText("[${r.nextInt(1..1000)}] Hello World!", ContentType.Text.Plain)
+            val message = "[${r.nextInt(1..1000)}] Hello World!"
+            application.log.info(message)
+            call.respondText(message, ContentType.Text.Plain)
         }
         post("/one") {
             call.receive<Data>().let {
                 val id = r.nextInt(1..1000)
                 val data = it.copy(id = id, title = "~${it.title}~", description = "${it.description}#${id}")
-                println(data)
+                application.log.info(data.toString())
                 call.respond(data)
             }
         }
@@ -43,7 +45,7 @@ fun Application.module() {
                 val bigTitle = list.fold("") { title, data -> title + data.title }
                 val bigDescription = list.fold("") { desc, data -> desc + data.description }
                 val data = Data(bigId, bigTitle, bigDescription)
-                println(data)
+                application.log.info(data.toString())
                 call.respond(data)
             }
         }
